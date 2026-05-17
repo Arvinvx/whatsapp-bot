@@ -8,6 +8,7 @@
     "dev": "nodemon index.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.105.4",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "openai": "^4.52.7",

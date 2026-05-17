@@ -1,6 +1,6 @@
-# CaffeBot — WhatsApp AI Restaurant Assistant
+# SparkClean Birmingham — WhatsApp Lead Bot + Landing Page
 
-A WhatsApp chatbot demo for a restaurant, powered by Twilio and OpenAI GPT-4o.
+A WhatsApp AI lead-capture bot for SparkClean Birmingham, powered by Twilio, OpenAI GPT-4o and Supabase. Includes a mobile-first landing page with embedded chat widget and a real-time admin dashboard.
 
 ---
 
@@ -8,9 +8,11 @@ A WhatsApp chatbot demo for a restaurant, powered by Twilio and OpenAI GPT-4o.
 
 ```
 caffebot/
-├── index.js          # Express server + webhook handler
+├── index.js          # Express server + Twilio webhook + Supabase lead save
+├── index.html        # Landing page with embedded AI chat widget
+├── dashboard.html    # Admin dashboard — reads leads from Supabase
 ├── package.json
-├── .env.example      # Copy to .env and fill in your keys
+├── .env              # Environment variables (never commit)
 └── .gitignore
 ```
 
@@ -38,6 +40,8 @@ Fill in your `.env`:
 | `TWILIO_AUTH_TOKEN` | Twilio Console → Account Info |
 | `TWILIO_WHATSAPP_FROM` | `whatsapp:+14155238886` (sandbox default) |
 | `OPENAI_API_KEY` | platform.openai.com → API Keys |
+| `SUPABASE_URL` | Supabase Dashboard → Project Settings → API |
+| `SUPABASE_ANON_KEY` | Supabase Dashboard → Project Settings → API |
 
 ### 3. Run locally
 
@@ -110,8 +114,51 @@ Paste `https://caffebot-production.up.railway.app/webhook` into your Twilio sand
 
 ---
 
+---
+
+## Supabase Setup
+
+### Create the `leads` table
+
+Run this SQL in your Supabase project → SQL Editor:
+
+```sql
+create table leads (
+  id uuid default gen_random_uuid() primary key,
+  phone text,
+  name text,
+  service_type text,
+  property_size text,
+  location text,
+  preferred_date text,
+  response_time_seconds integer,
+  status text default 'waiting_call',
+  created_at timestamp default now()
+);
+```
+
+### Connect the dashboard
+
+Open `dashboard.html` and fill in the two constants at the top of the `<script>` block:
+
+```js
+const SUPABASE_URL      = "https://your-project.supabase.co";
+const SUPABASE_ANON_KEY = "your-anon-key";
+```
+
+### Connect the landing page chat widget
+
+Open `index.html` and fill in:
+
+```js
+const OPENAI_API_KEY = "sk-...";
+```
+
+---
+
 ## Notes
 
+- The WhatsApp bot collects: name, service type, property size, location, preferred date, phone — then saves to Supabase and resets the conversation.
+- `response_time_seconds` is measured from the customer's first WhatsApp message to booking completion.
 - Conversation history is stored in memory per phone number. Restarting the server clears all history (fine for a demo).
-- To reset a single user's conversation, restart the server or implement a `"reset"` keyword handler.
 - For production, replace the in-memory store with Redis or a database.

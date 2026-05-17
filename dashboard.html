@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SparkClean — Admin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Fira+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <style>
+    /* ── Tokens ──────────────────────────────────────────────────────────── */
+    :root {
+      --primary:        #1E40AF;
+      --primary-dark:   #1E3A8A;
+      --primary-light:  #DBEAFE;
+      --secondary:      #3B82F6;
+      --accent:         #D97706;
+      --success:        #16A34A;
+      --success-bg:     #DCFCE7;
+      --success-text:   #14532D;
+      --warning:        #D97706;
+      --warning-bg:     #FEF3C7;
+      --warning-text:   #92400E;
+      --danger:         #DC2626;
+      --danger-bg:      #FEE2E2;
+      --danger-text:    #991B1B;
+      --info:           #2563EB;
+      --info-bg:        #DBEAFE;
+      --info-text:      #1E40AF;
+      --bg:             #F8FAFC;
+      --surface:        #FFFFFF;
+      --border:         #E2E8F0;
+      --border-focus:   #3B82F6;
+      --text:           #0F172A;
+      --text-secondary: #475569;
+      --text-muted:     #94A3B8;
+      --sidebar-w:      240px;
+      --topbar-h:       60px;
+      --radius-sm:      6px;
+      --radius:         10px;
+      --shadow-sm:      0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.05);
+      --shadow:         0 4px 16px rgba(0,0,0,.08);
+      --transition:     all .18s ease;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Fira Sans', -apple-system, sans-serif;
+      font-size: 14px;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* ── Layout ──────────────────────────────────────────────────────────── */
+    .layout { display: flex; min-height: 100vh; }
+
+    /* ── SIDEBAR ─────────────────────────────────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--primary-dark);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 200;
+      transition: transform .25s ease;
+    }
+
+    .sidebar__brand {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      padding: 1.25rem 1.25rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .sidebar__brand-icon {
+      width: 34px;
+      height: 34px;
+      background: var(--secondary);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar__brand-icon svg { width: 18px; height: 18px; color: #fff; }
+
+    .sidebar__brand-text {
+      font-family: 'Fira Sans', sans-serif;
+      font-weight: 700;
+      font-size: .92rem;
+      line-height: 1.2;
+      color: #fff;
+    }
+
+    .sidebar__brand-sub {
+      font-size: .68rem;
+      color: rgba(255,255,255,.5);
+      font-weight: 400;
+    }
+
+    .sidebar__nav {
+      flex: 1;
+      padding: .75rem 0;
+      overflow-y: auto;
+    }
+
+    .sidebar__section-label {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.35);
+      padding: .75rem 1.25rem .25rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      padding: .6rem 1.25rem;
+      font-size: .85rem;
+      font-weight: 500;
+      color: rgba(255,255,255,.65);
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .nav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
+
+    .nav-item:hover {
+      background: rgba(255,255,255,.06);
+      color: #fff;
+      border-left-color: rgba(255,255,255,.2);
+    }
+
+    .nav-item.active {
+      background: rgba(59,130,246,.25);
+      color: #fff;
+      border-left-color: var(--secondary);
+    }
+
+    .sidebar__footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+
+    .sidebar__refresh-btn {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      width: 100%;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius-sm);
+      color: rgba(255,255,255,.75);
+      padding: .55rem .75rem;
+      font-size: .78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Fira Sans', sans-serif;
+    }
+
+    .sidebar__refresh-btn:hover { background: rgba(255,255,255,.12); color: #fff; }
+    .sidebar__refresh-btn svg { width: 14px; height: 14px; }
+
+    .sidebar__countdown {
+      font-family: 'Fira Code', monospace;
+      font-size: .7rem;
+      color: rgba(255,255,255,.4);
+      text-align: center;
+      margin-top: .5rem;
+    }
+
+    /* ── MAIN ────────────────────────────────────────────────────────────── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── TOPBAR ──────────────────────────────────────────────────────────── */
+    .topbar {
+      height: var(--topbar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar__left {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .topbar__hamburger {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: .4rem;
+      color: var(--text-secondary);
+    }
+
+    .topbar__hamburger svg { width: 20px; height: 20px; }
+
+    .topbar__title {
+      font-family: 'Fira Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .topbar__right { display: flex; align-items: center; gap: .75rem; }
+
+    .topbar__badge {
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: .3rem .75rem;
+      border-radius: 100px;
+      font-size: .72rem;
+      font-weight: 600;
+    }
+
+    .topbar__badge svg { width: 13px; height: 13px; }
+
+    .topbar__link {
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: .82rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: .35rem .6rem;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+
+    .topbar__link svg { width: 15px; height: 15px; }
+    .topbar__link:hover { background: var(--bg); color: var(--text); }
+
+    /* ── PAGE CONTENT ────────────────────────────────────────────────────── */
+    .page { padding: 1.5rem; }
+
+    /* ── STATS ROW ───────────────────────────────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      transition: var(--transition);
+    }
+
+    .stat-card:hover { box-shadow: var(--shadow); }
+
+    .stat-card__icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .stat-card__icon svg { width: 20px; height: 20px; }
+
+    .stat-card--total   .stat-card__icon { background: var(--primary-light); color: var(--primary); }
+    .stat-card--booked  .stat-card__icon { background: var(--success-bg);    color: var(--success); }
+    .stat-card--pending .stat-card__icon { background: var(--warning-bg);    color: var(--warning); }
+    .stat-card--today   .stat-card__icon { background: #EDE9FE;              color: #6D28D9; }
+
+    .stat-card__body { flex: 1; min-width: 0; }
+
+    .stat-card__label {
+      font-size: .72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--text-muted);
+      margin-bottom: .25rem;
+    }
+
+    .stat-card__value {
+      font-family: 'Fira Code', monospace;
+      font-size: 1.65rem;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--text);
+      margin-bottom: .3rem;
+    }
+
+    .stat-card__trend {
+      display: inline-flex;
+      align-items: center;
+      gap: .2rem;
+      font-size: .7rem;
+      font-weight: 600;
+    }
+
+    .stat-card__trend svg { width: 12px; height: 12px; }
+    .stat-card__trend--up   { color: var(--success); }
+    .stat-card__trend--flat { color: var(--text-muted); }
+
+    /* ── TOOLBAR ─────────────────────────────────────────────────────────── */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .75rem 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .toolbar__label {
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .toolbar__label svg { width: 14px; height: 14px; }
+
+    .filter-select, .filter-input {
+      border: 1px solid var(--border);
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: .4rem .75rem;
+      font-size: .82rem;
+      color: var(--text);
+      outline: none;
+      font-family: 'Fira Sans', sans-serif;
+      transition: border-color .18s;
+      cursor: pointer;
+    }
+
+    .filter-select:focus, .filter-input:focus { border-color: var(--border-focus); }
+
+    .btn-reset {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: .4rem .7rem;
+      font-size: .78rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Fira Sans', sans-serif;
+    }
+
+    .btn-reset svg { width: 13px; height: 13px; }
+    .btn-reset:hover { border-color: var(--primary); color: var(--primary); }
+
+    .toolbar__spacer { flex: 1; }
+
+    .result-count {
+      font-family: 'Fira Code', monospace;
+      font-size: .72rem;
+      color: var(--text-muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: .25rem .65rem;
+    }
+
+    /* ── TABLE ───────────────────────────────────────────────────────────── */
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .table-scroll { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    thead {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      text-align: left;
+      padding: .65rem 1rem;
+      font-size: .68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-muted);
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #F1F5F9;
+      transition: background .12s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #F8FAFC; }
+
+    td {
+      padding: .8rem 1rem;
+      font-size: .84rem;
+      vertical-align: middle;
+    }
+
+    .td-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .td-phone {
+      font-family: 'Fira Code', monospace;
+      font-size: .78rem;
+      color: var(--text-secondary);
+    }
+
+    .td-service { color: var(--text); }
+    .td-loc     { color: var(--text-secondary); font-size: .8rem; }
+    .td-date    { white-space: nowrap; font-size: .8rem; color: var(--text-secondary); }
+    .td-rtime   { text-align: center; }
+
+    .rtime-badge {
+      font-family: 'Fira Code', monospace;
+      font-size: .75rem;
+      color: var(--text-muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: .2rem .55rem;
+      display: inline-block;
+    }
+
+    /* ── Status chips ────────────────────────────────────────────────────── */
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      padding: .25rem .65rem;
+      border-radius: 100px;
+      font-size: .72rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status-chip::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+
+    .status-chip--waiting_call { background: var(--warning-bg); color: var(--warning-text); }
+    .status-chip--called       { background: var(--info-bg);    color: var(--info-text); }
+    .status-chip--booked       { background: var(--success-bg); color: var(--success-text); }
+    .status-chip--no_answer    { background: var(--danger-bg);  color: var(--danger-text); }
+
+    /* ── Status select ───────────────────────────────────────────────────── */
+    .status-select {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      padding: .3rem .5rem;
+      font-size: .78rem;
+      color: var(--text);
+      cursor: pointer;
+      outline: none;
+      font-family: 'Fira Sans', sans-serif;
+      transition: border-color .18s;
+      max-width: 148px;
+    }
+
+    .status-select:focus { border-color: var(--border-focus); }
+
+    /* ── Action buttons ──────────────────────────────────────────────────── */
+    .actions { display: flex; gap: .35rem; }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      padding: .3rem .65rem;
+      border-radius: var(--radius-sm);
+      font-size: .75rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity .15s, transform .15s;
+      font-family: 'Fira Sans', sans-serif;
+      white-space: nowrap;
+    }
+
+    .action-btn svg { width: 13px; height: 13px; }
+    .action-btn:hover { opacity: .8; transform: translateY(-1px); }
+    .action-btn:active { transform: translateY(0); }
+
+    .action-btn--call { background: var(--info-bg);    color: var(--info-text); }
+    .action-btn--wa   { background: #D1FAE5;           color: #065F46; }
+
+    /* ── Empty / loading ─────────────────────────────────────────────────── */
+    .table-empty {
+      text-align: center;
+      padding: 3.5rem 1rem;
+      color: var(--text-muted);
+    }
+
+    .table-empty__icon {
+      width: 48px;
+      height: 48px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto .75rem;
+      color: var(--text-muted);
+    }
+
+    .table-empty__icon svg { width: 24px; height: 24px; }
+
+    .table-empty__title {
+      font-weight: 600;
+      font-size: .9rem;
+      color: var(--text-secondary);
+      margin-bottom: .25rem;
+    }
+
+    .table-empty__sub { font-size: .82rem; }
+
+    /* ── Toast ───────────────────────────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 999;
+      background: var(--text);
+      color: #fff;
+      padding: .65rem 1rem;
+      border-radius: var(--radius);
+      font-size: .82rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      box-shadow: var(--shadow);
+      transform: translateY(8px);
+      opacity: 0;
+      transition: all .25s ease;
+      pointer-events: none;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast svg { width: 15px; height: 15px; color: #4ADE80; }
+
+    /* ── Sidebar overlay (mobile) ────────────────────────────────────────── */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 199;
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay.open { display: block; }
+
+      .main { margin-left: 0; }
+
+      .topbar__hamburger { display: flex; }
+
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 480px) {
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .page { padding: 1rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<script>
+/* ── Config ────────────────────────────────────────────────────────────── */
+const SUPABASE_URL      = "";
+const SUPABASE_ANON_KEY = "";
+
+const sb = (SUPABASE_URL && SUPABASE_ANON_KEY)
+  ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+/* ── State ──────────────────────────────────────────────────────────────── */
+let allLeads    = [];
+let filterStatus = "";
+let filterDate   = "";
+let refreshTimer = 30;
+
+/* ── Supabase ───────────────────────────────────────────────────────────── */
+async function loadLeads() {
+  if (!sb) { renderNoConfig(); return; }
+
+  const { data, error } = await sb
+    .from("leads")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) { console.error("Supabase error:", error.message); return; }
+
+  allLeads = data || [];
+  renderStats();
+  renderTable();
+}
+
+async function updateStatus(id, newStatus) {
+  if (!sb) return;
+
+  const { error } = await sb.from("leads").update({ status: newStatus }).eq("id", id);
+  if (error) { console.error("Update error:", error.message); return; }
+
+  const lead = allLeads.find(l => l.id === id);
+  if (lead) lead.status = newStatus;
+  renderStats();
+  showToast("Status updated");
+}
+
+/* ── Stats ──────────────────────────────────────────────────────────────── */
+function renderStats() {
+  const today  = new Date().toISOString().slice(0, 10);
+  const total  = allLeads.length;
+  const booked = allLeads.filter(l => l.status === "booked").length;
+  const pending= allLeads.filter(l => l.status === "waiting_call").length;
+  const todayN = allLeads.filter(l => l.created_at && l.created_at.slice(0, 10) === today).length;
+
+  setText("stat-total",   total);
+  setText("stat-booked",  booked);
+  setText("stat-pending", pending);
+  setText("stat-today",   todayN);
+
+  setText("trend-booked",  booked  > 0 ? "↑ " + booked + " booked"   : "No bookings yet");
+  setText("trend-pending", pending > 0 ? pending + " awaiting call"   : "All called");
+  setText("trend-today",   todayN  > 0 ? "↑ " + todayN + " today"    : "None today");
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+/* ── Table ──────────────────────────────────────────────────────────────── */
+function renderTable() {
+  const tbody = document.getElementById("leadsBody");
+
+  const rows = allLeads.filter(l => {
+    const okStatus = !filterStatus || l.status === filterStatus;
+    const okDate   = !filterDate   || (l.preferred_date && l.preferred_date.includes(filterDate));
+    return okStatus && okDate;
+  });
+
+  document.getElementById("resultCount").textContent = rows.length + " lead" + (rows.length !== 1 ? "s" : "");
+
+  if (rows.length === 0) {
+    tbody.innerHTML = `
+      <tr><td colspan="8">
+        <div class="table-empty">
+          <div class="table-empty__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect width="6" height="4" x="9" y="3" rx="1"/><path d="M9 12h6"/><path d="M9 16h4"/></svg>
+          </div>
+          <div class="table-empty__title">No leads found</div>
+          <div class="table-empty__sub">Try adjusting your filters or wait for new enquiries.</div>
+        </div>
+      </td></tr>`;
+    return;
+  }
+
+  const statusLabels = { waiting_call: "Waiting Call", called: "Called", booked: "Booked", no_answer: "No Answer" };
+  const statusOpts   = Object.entries(statusLabels);
+
+  tbody.innerHTML = rows.map(lead => {
+    const phone   = lead.phone || "";
+    const waPhone = phone.replace(/\D/g, "");
+    const rtime   = lead.response_time_seconds != null ? fmtTime(lead.response_time_seconds) : "—";
+    const status  = lead.status || "waiting_call";
+
+    const selectOpts = statusOpts.map(([val, lbl]) =>
+      `<option value="${val}" ${status === val ? "selected" : ""}>${lbl}</option>`
+    ).join("");
+
+    const callBtn = phone ? `<a href="tel:${esc(phone)}" class="action-btn action-btn--call">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      Call
+    </a>` : "";
+
+    const waBtn = waPhone ? `<a href="https://wa.me/${esc(waPhone)}" target="_blank" rel="noopener" class="action-btn action-btn--wa">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      WhatsApp
+    </a>` : "";
+
+    return `<tr>
+      <td class="td-name">${esc(lead.name || "—")}</td>
+      <td class="td-phone">${esc(phone || "—")}</td>
+      <td class="td-service">${esc(lead.service_type || "—")}</td>
+      <td class="td-loc">${esc(lead.location || "—")}</td>
+      <td class="td-date">${esc(lead.preferred_date || "—")}</td>
+      <td class="td-rtime"><span class="rtime-badge">${rtime}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:.4rem;">
+          <span class="status-chip status-chip--${status}">${statusLabels[status] || status}</span>
+        </div>
+      </td>
+      <td>
+        <div style="display:flex;flex-direction:column;gap:.3rem;">
+          <select class="status-select" onchange="updateStatus('${lead.id}', this.value)" aria-label="Change status">
+            ${selectOpts}
+          </select>
+          <div class="actions">${callBtn}${waBtn}</div>
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+/* ── Filters ────────────────────────────────────────────────────────────── */
+function applyStatus(val) { filterStatus = val; renderTable(); }
+function applyDate(val)   { filterDate   = val; renderTable(); }
+function resetFilters() {
+  filterStatus = ""; filterDate = "";
+  document.getElementById("filterStatus").value = "";
+  document.getElementById("filterDate").value   = "";
+  renderTable();
+}
+
+/* ── Helpers ────────────────────────────────────────────────────────────── */
+function esc(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function fmtTime(s) {
+  if (s < 60)   return s + "s";
+  if (s < 3600) return Math.floor(s/60) + "m " + (s%60) + "s";
+  return Math.floor(s/3600) + "h " + Math.floor((s%3600)/60) + "m";
+}
+
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.querySelector(".toast__msg").textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2800);
+}
+
+function renderNoConfig() {
+  document.getElementById("leadsBody").innerHTML = `
+    <tr><td colspan="8">
+      <div class="table-empty">
+        <div class="table-empty__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="table-empty__title">Not connected</div>
+        <div class="table-empty__sub">Fill in SUPABASE_URL and SUPABASE_ANON_KEY at the top of this file.</div>
+      </div>
+    </td></tr>`;
+}
+
+/* ── Sidebar toggle ─────────────────────────────────────────────────────── */
+function toggleSidebar() {
+  document.querySelector(".sidebar").classList.toggle("open");
+  document.querySelector(".sidebar-overlay").classList.toggle("open");
+}
+
+/* ── Auto-refresh ───────────────────────────────────────────────────────── */
+loadLeads();
+
+setInterval(loadLeads, 30000);
+
+setInterval(() => {
+  refreshTimer = refreshTimer <= 1 ? 30 : refreshTimer - 1;
+  const el = document.getElementById("countdown");
+  if (el) el.textContent = "Next refresh in " + refreshTimer + "s";
+}, 1000);
+</script>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<div class="layout">
+  <!-- ── SIDEBAR ──────────────────────────────────────────────────────── -->
+  <aside class="sidebar" aria-label="Sidebar navigation">
+    <div class="sidebar__brand">
+      <div class="sidebar__brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+      </div>
+      <div>
+        <div class="sidebar__brand-text">SparkClean</div>
+        <div class="sidebar__brand-sub">Admin Panel</div>
+      </div>
+    </div>
+
+    <nav class="sidebar__nav" aria-label="Main navigation">
+      <div class="sidebar__section-label">Main</div>
+
+      <a href="#" class="nav-item active" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        Dashboard
+      </a>
+
+      <a href="#" class="nav-item" onclick="applyStatus('waiting_call');return false;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        Needs Calling
+      </a>
+
+      <a href="#" class="nav-item" onclick="applyStatus('booked');return false;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Booked
+      </a>
+
+      <a href="#" class="nav-item" onclick="applyStatus('no_answer');return false;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+        No Answer
+      </a>
+
+      <div class="sidebar__section-label" style="margin-top:.5rem;">Links</div>
+
+      <a href="index.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        View Website
+      </a>
+    </nav>
+
+    <div class="sidebar__footer">
+      <button class="sidebar__refresh-btn" onclick="loadLeads();showToast('Refreshed');" aria-label="Refresh leads">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+        Refresh Now
+      </button>
+      <div class="sidebar__countdown" id="countdown">Next refresh in 30s</div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ─────────────────────────────────────────────────────────── -->
+  <div class="main">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar__left">
+        <button class="topbar__hamburger" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+        </button>
+        <span class="topbar__title">Lead Dashboard</span>
+      </div>
+      <div class="topbar__right">
+        <div class="topbar__badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+          Live Data
+        </div>
+        <a href="index.html" class="topbar__link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Back to site
+        </a>
+      </div>
+    </div>
+
+    <!-- PAGE -->
+    <div class="page">
+
+      <!-- STATS ROW -->
+      <div class="stats-row">
+        <div class="stat-card stat-card--total">
+          <div class="stat-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="stat-card__body">
+            <div class="stat-card__label">Total Leads</div>
+            <div class="stat-card__value" id="stat-total">—</div>
+            <div class="stat-card__trend stat-card__trend--flat">All time</div>
+          </div>
+        </div>
+
+        <div class="stat-card stat-card--booked">
+          <div class="stat-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div class="stat-card__body">
+            <div class="stat-card__label">Booked</div>
+            <div class="stat-card__value" id="stat-booked">—</div>
+            <div class="stat-card__trend stat-card__trend--up" id="trend-booked">—</div>
+          </div>
+        </div>
+
+        <div class="stat-card stat-card--pending">
+          <div class="stat-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="stat-card__body">
+            <div class="stat-card__label">Pending Call</div>
+            <div class="stat-card__value" id="stat-pending">—</div>
+            <div class="stat-card__trend stat-card__trend--flat" id="trend-pending">—</div>
+          </div>
+        </div>
+
+        <div class="stat-card stat-card--today">
+          <div class="stat-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div class="stat-card__body">
+            <div class="stat-card__label">Today</div>
+            <div class="stat-card__value" id="stat-today">—</div>
+            <div class="stat-card__trend stat-card__trend--up" id="trend-today">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOOLBAR / FILTERS -->
+      <div class="toolbar">
+        <div class="toolbar__label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          Filters
+        </div>
+        <select class="filter-select" id="filterStatus" onchange="applyStatus(this.value)" aria-label="Filter by status">
+          <option value="">All statuses</option>
+          <option value="waiting_call">Waiting Call</option>
+          <option value="called">Called</option>
+          <option value="booked">Booked</option>
+          <option value="no_answer">No Answer</option>
+        </select>
+        <input
+          type="date"
+          class="filter-input"
+          id="filterDate"
+          onchange="applyDate(this.value)"
+          aria-label="Filter by preferred date"
+        />
+        <button class="btn-reset" onclick="resetFilters()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+          Reset
+        </button>
+        <div class="toolbar__spacer"></div>
+        <div class="result-count" id="resultCount">0 leads</div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-card">
+        <div class="table-scroll">
+          <table aria-label="Leads table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Service</th>
+                <th>Location</th>
+                <th>Pref. Date</th>
+                <th style="text-align:center">Response</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="leadsBody">
+              <tr>
+                <td colspan="8">
+                  <div class="table-empty">
+                    <div class="table-empty__icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div class="table-empty__title">Loading leads…</div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /page -->
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- TOAST -->
+<div class="toast" id="toast" role="alert" aria-live="polite">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+  <span class="toast__msg"></span>
+</div>
+
+</body>
+</html>

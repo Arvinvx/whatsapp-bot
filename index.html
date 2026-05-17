@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SparkClean Birmingham — Professional Cleaning Services</title>
+  <meta name="description" content="Professional domestic, office and end of tenancy cleaning in Birmingham. Fully insured, 5-star rated, 60-second response." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Design Tokens ─────────────────────────────────────────────────────── */
+    :root {
+      --primary:        #0F172A;
+      --primary-mid:    #1e3a5f;
+      --accent:         #0369A1;
+      --accent-hover:   #0284C7;
+      --accent-light:   #E0F2FE;
+      --success:        #16A34A;
+      --warning:        #D97706;
+      --bg:             #F8FAFC;
+      --surface:        #FFFFFF;
+      --border:         #E2E8F0;
+      --text:           #020617;
+      --text-secondary: #475569;
+      --text-muted:     #94A3B8;
+      --radius-sm:      6px;
+      --radius:         12px;
+      --radius-lg:      18px;
+      --shadow-sm:      0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+      --shadow:         0 4px 16px rgba(0,0,0,.08);
+      --shadow-lg:      0 12px 40px rgba(0,0,0,.12);
+      --transition:     all .2s ease;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Open Sans', -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--surface);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Poppins', sans-serif;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    img { display: block; max-width: 100%; }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Layout ────────────────────────────────────────────────────────────── */
+    .container {
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+
+    /* ── NAV ───────────────────────────────────────────────────────────────── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 300;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+    }
+
+    .nav__logo {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--primary);
+    }
+
+    .nav__logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    .nav__logo-icon svg { width: 20px; height: 20px; }
+
+    .nav__logo span { color: var(--accent); }
+
+    .nav__right { display: flex; align-items: center; gap: .75rem; }
+
+    .nav__phone {
+      display: none;
+      align-items: center;
+      gap: .4rem;
+      font-size: .875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .nav__phone svg { width: 15px; height: 15px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .55rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: .875rem;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .btn--primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn--primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(3,105,161,.35); }
+
+    .btn--outline {
+      background: transparent;
+      color: var(--primary);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn--outline:hover { border-color: var(--accent); color: var(--accent); }
+
+    .btn--ghost {
+      background: rgba(255,255,255,.15);
+      color: #fff;
+      border: 1.5px solid rgba(255,255,255,.3);
+    }
+
+    .btn--ghost:hover { background: rgba(255,255,255,.25); }
+
+    .btn--lg {
+      padding: .85rem 2rem;
+      font-size: 1rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn--admin {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn--admin:hover { background: var(--primary-mid); }
+
+    /* ── HERO ──────────────────────────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, var(--primary) 0%, #164e8a 55%, #0369A1 100%);
+      color: #fff;
+      padding: 5rem 0 5.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") center;
+    }
+
+    .hero__inner { position: relative; z-index: 1; }
+
+    .hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 100px;
+      padding: .3rem 1rem;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero__badge svg { width: 14px; height: 14px; }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 3.75rem);
+      font-weight: 900;
+      max-width: 720px;
+      margin: 0 auto .75rem;
+    }
+
+    .hero h1 .highlight {
+      color: #7dd3fc;
+    }
+
+    .hero__sub {
+      font-size: clamp(.95rem, 2vw, 1.15rem);
+      opacity: .88;
+      max-width: 520px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.65;
+    }
+
+    .hero__ctas {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+
+    .hero__trust {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-top: 2.5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid rgba(255,255,255,.15);
+    }
+
+    .hero__trust-item {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .82rem;
+      font-weight: 600;
+      opacity: .9;
+    }
+
+    .hero__trust-item svg { width: 15px; height: 15px; color: #7dd3fc; }
+
+    /* ── STATS BAR ─────────────────────────────────────────────────────────── */
+    .stats-bar {
+      background: var(--primary);
+    }
+
+    .stats-bar__inner {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-left: 1px solid rgba(255,255,255,.08);
+    }
+
+    .stats-bar__item {
+      padding: 1.75rem 1.5rem;
+      border-right: 1px solid rgba(255,255,255,.08);
+      text-align: center;
+      color: #fff;
+    }
+
+    .stats-bar__num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #7dd3fc;
+      line-height: 1;
+      margin-bottom: .25rem;
+    }
+
+    .stats-bar__label {
+      font-size: .8rem;
+      opacity: .7;
+      font-weight: 500;
+    }
+
+    /* ── SECTION COMMON ────────────────────────────────────────────────────── */
+    .section { padding: 5rem 0; }
+    .section--alt { background: var(--bg); }
+
+    .section__label {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .5rem;
+    }
+
+    .section__title {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: .75rem;
+    }
+
+    .section__sub {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      max-width: 500px;
+      line-height: 1.7;
+    }
+
+    .section__header { margin-bottom: 3rem; }
+    .section__header--center { text-align: center; }
+    .section__header--center .section__sub { margin: 0 auto; }
+
+    /* ── SERVICES ──────────────────────────────────────────────────────────── */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .service-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem 1.75rem;
+      box-shadow: var(--shadow-sm);
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+      cursor: default;
+    }
+
+    .service-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--accent-light);
+    }
+
+    .service-card__icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .service-card__icon svg { width: 26px; height: 26px; }
+
+    .service-card:nth-child(1) .service-card__icon { background: #DBEAFE; color: #1D4ED8; }
+    .service-card:nth-child(2) .service-card__icon { background: #D1FAE5; color: #065F46; }
+    .service-card:nth-child(3) .service-card__icon { background: #FEF3C7; color: #92400E; }
+
+    .service-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: .5rem;
+      color: var(--primary);
+    }
+
+    .service-card p {
+      font-size: .9rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 1.25rem;
+    }
+
+    .service-card__features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+    }
+
+    .service-card__features li {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .82rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .service-card__features li svg {
+      width: 15px;
+      height: 15px;
+      color: var(--success);
+      flex-shrink: 0;
+    }
+
+    /* ── HOW IT WORKS ──────────────────────────────────────────────────────── */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2rem;
+      position: relative;
+    }
+
+    .step {
+      text-align: center;
+      padding: 2rem 1.5rem;
+    }
+
+    .step__num {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      border: 3px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+      position: relative;
+    }
+
+    .step__num svg { width: 28px; height: 28px; color: var(--accent); }
+
+    .step__num-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 24px;
+      height: 24px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      font-family: 'Poppins', sans-serif;
+      font-size: .7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+    }
+
+    .step h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: .5rem; color: var(--primary); }
+    .step p { font-size: .875rem; color: var(--text-secondary); line-height: 1.65; }
+
+    /* ── TRUST SIGNALS ─────────────────────────────────────────────────────── */
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .trust-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem 1.5rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      transition: var(--transition);
+    }
+
+    .trust-card:hover { box-shadow: var(--shadow); border-color: var(--accent-light); }
+
+    .trust-card__icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .trust-card__icon svg { width: 22px; height: 22px; }
+
+    .trust-card:nth-child(1) .trust-card__icon { background: #DBEAFE; color: #1D4ED8; }
+    .trust-card:nth-child(2) .trust-card__icon { background: #D1FAE5; color: #065F46; }
+    .trust-card:nth-child(3) .trust-card__icon { background: #FEF3C7; color: #92400E; }
+    .trust-card:nth-child(4) .trust-card__icon { background: #EDE9FE; color: #5B21B6; }
+
+    .trust-card__body h4 {
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: .25rem;
+      color: var(--primary);
+    }
+
+    .trust-card__body p { font-size: .82rem; color: var(--text-secondary); line-height: 1.55; }
+
+    /* ── TESTIMONIALS ──────────────────────────────────────────────────────── */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .testimonial {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: var(--transition);
+    }
+
+    .testimonial:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+
+    .testimonial__stars {
+      display: flex;
+      gap: 2px;
+    }
+
+    .testimonial__stars svg {
+      width: 17px;
+      height: 17px;
+      fill: #F59E0B;
+      color: #F59E0B;
+    }
+
+    .testimonial__text {
+      font-size: .9rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      flex: 1;
+      font-style: italic;
+    }
+
+    .testimonial__author {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding-top: .75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .testimonial__avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: .9rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .testimonial:nth-child(1) .testimonial__avatar { background: #0369A1; }
+    .testimonial:nth-child(2) .testimonial__avatar { background: #16A34A; }
+    .testimonial:nth-child(3) .testimonial__avatar { background: #7C3AED; }
+
+    .testimonial__name {
+      font-weight: 700;
+      font-size: .88rem;
+      color: var(--primary);
+    }
+
+    .testimonial__location {
+      font-size: .78rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: .25rem;
+    }
+
+    .testimonial__location svg { width: 12px; height: 12px; }
+
+    /* ── CTA BANNER ────────────────────────────────────────────────────────── */
+    .cta-banner {
+      background: linear-gradient(135deg, var(--primary) 0%, #164e8a 60%, var(--accent) 100%);
+      color: #fff;
+      padding: 5rem 0;
+      text-align: center;
+    }
+
+    .cta-banner h2 {
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 900;
+      margin-bottom: .75rem;
+    }
+
+    .cta-banner p { opacity: .82; font-size: 1rem; margin-bottom: 2rem; }
+
+    .cta-banner__actions {
+      display: flex;
+      justify-content: center;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+
+    /* ── FOOTER ────────────────────────────────────────────────────────────── */
+    .footer {
+      background: #020617;
+      color: #94A3B8;
+      padding: 3rem 0 2rem;
+    }
+
+    .footer__inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .footer__brand {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      margin-bottom: .75rem;
+    }
+
+    .footer__brand-icon {
+      width: 30px;
+      height: 30px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .footer__brand-icon svg { width: 16px; height: 16px; color: #fff; }
+
+    .footer__tagline { font-size: .85rem; max-width: 260px; line-height: 1.6; }
+
+    .footer__links {
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+    }
+
+    .footer__link {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .875rem;
+      color: #94A3B8;
+      transition: color .2s;
+    }
+
+    .footer__link svg { width: 15px; height: 15px; }
+    .footer__link:hover { color: #fff; }
+
+    .footer__bottom {
+      border-top: 1px solid rgba(255,255,255,.07);
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      font-size: .78rem;
+      color: #475569;
+      text-align: center;
+    }
+
+    /* ── CHAT BUBBLE ───────────────────────────────────────────────────────── */
+    .chat-fab {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 500;
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: #25D366;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(37,211,102,.45), 0 2px 8px rgba(0,0,0,.15);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .chat-fab:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 28px rgba(37,211,102,.55), 0 4px 12px rgba(0,0,0,.2);
+    }
+
+    .chat-fab:focus-visible {
+      outline: 3px solid #25D366;
+      outline-offset: 3px;
+    }
+
+    .chat-fab svg { width: 32px; height: 32px; fill: #fff; }
+
+    /* ── CHAT PANEL ────────────────────────────────────────────────────────── */
+    .chat-panel {
+      position: fixed;
+      bottom: 5.75rem;
+      right: 1.5rem;
+      z-index: 499;
+      width: 370px;
+      max-width: calc(100vw - 2rem);
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 20px 64px rgba(0,0,0,.22), 0 4px 16px rgba(0,0,0,.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(20px) scale(.95);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .25s ease;
+    }
+
+    .chat-panel.open {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .chat-panel__header {
+      background: #075E54;
+      padding: 1rem 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+
+    .chat-panel__avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #25D366;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .chat-panel__avatar svg { width: 22px; height: 22px; color: #fff; stroke-width: 2; }
+
+    .chat-panel__info { flex: 1; }
+
+    .chat-panel__name {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: .92rem;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    .chat-panel__status {
+      font-size: .72rem;
+      color: rgba(255,255,255,.75);
+      display: flex;
+      align-items: center;
+      gap: .3rem;
+    }
+
+    .chat-panel__status::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #25D366;
+      display: inline-block;
+    }
+
+    .chat-panel__close {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,.7);
+      cursor: pointer;
+      padding: .3rem;
+      border-radius: 50%;
+      transition: var(--transition);
+      display: flex;
+    }
+
+    .chat-panel__close:hover { background: rgba(255,255,255,.12); color: #fff; }
+    .chat-panel__close svg { width: 18px; height: 18px; }
+
+    .chat-panel__messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      background: #ECE5DD;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+      min-height: 300px;
+      max-height: 340px;
+    }
+
+    .chat-msg {
+      max-width: 84%;
+      padding: .55rem .8rem;
+      border-radius: 10px;
+      font-size: .855rem;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .chat-msg--bot {
+      background: #fff;
+      border-radius: 2px 10px 10px 10px;
+      align-self: flex-start;
+      box-shadow: 0 1px 2px rgba(0,0,0,.1);
+    }
+
+    .chat-msg--user {
+      background: #DCF8C6;
+      border-radius: 10px 10px 2px 10px;
+      align-self: flex-end;
+      box-shadow: 0 1px 2px rgba(0,0,0,.1);
+    }
+
+    .chat-msg__time {
+      font-size: .6rem;
+      opacity: .5;
+      margin-top: .2rem;
+      text-align: right;
+    }
+
+    .chat-typing {
+      align-self: flex-start;
+      background: #fff;
+      border-radius: 2px 10px 10px 10px;
+      padding: .55rem .8rem;
+      font-size: .78rem;
+      color: var(--text-muted);
+      box-shadow: 0 1px 2px rgba(0,0,0,.1);
+      display: none;
+    }
+
+    .chat-typing.visible { display: block; }
+
+    .chat-panel__input {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .75rem 1rem;
+      background: #fff;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .chat-input-field {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: .55rem 1rem;
+      font-size: .855rem;
+      outline: none;
+      background: var(--bg);
+      font-family: 'Open Sans', sans-serif;
+      transition: border-color .2s;
+    }
+
+    .chat-input-field:focus { border-color: #25D366; }
+
+    .chat-send-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #25D366;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background .2s;
+    }
+
+    .chat-send-btn:hover { background: #1EBE5D; }
+    .chat-send-btn svg { width: 18px; height: 18px; color: #fff; }
+
+    /* ── RESPONSIVE ────────────────────────────────────────────────────────── */
+    @media (min-width: 640px) {
+      .nav__phone { display: flex; }
+    }
+
+    @media (max-width: 768px) {
+      .stats-bar__inner { grid-template-columns: repeat(2, 1fr); }
+      .footer__inner { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .hero { padding: 3.5rem 0 4rem; }
+      .stats-bar__inner { grid-template-columns: repeat(2, 1fr); }
+      .chat-panel { right: .75rem; width: calc(100vw - 1.5rem); }
+      .chat-fab { right: 1rem; bottom: 1rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ──────────────────────────────────────────────────────────────────── -->
+<header class="nav">
+  <div class="container">
+    <div class="nav__inner">
+      <a href="#" class="nav__logo" aria-label="SparkClean Birmingham home">
+        <div class="nav__logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+          </svg>
+        </div>
+        SparkClean <span>&nbsp;Birmingham</span>
+      </a>
+      <div class="nav__right">
+        <a href="tel:+441216001234" class="nav__phone" aria-label="Call us">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          0121 600 1234
+        </a>
+        <a href="dashboard.html" class="btn btn--admin" aria-label="Admin dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          Admin
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ── HERO ──────────────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero__inner">
+      <div class="hero__badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Birmingham's Most Trusted Cleaning Company
+      </div>
+
+      <h1>Your Home Deserves<br>a <span class="highlight">Spotless</span> Clean</h1>
+
+      <p class="hero__sub">
+        Professional domestic, office and end of tenancy cleaning across Birmingham —
+        fully insured, DBS checked and with a 60-second response guarantee.
+      </p>
+
+      <div class="hero__ctas">
+        <button class="btn btn--primary btn--lg" onclick="openChat()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Get a Free Quote
+        </button>
+        <a href="tel:+441216001234" class="btn btn--ghost btn--lg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Call Now
+        </a>
+      </div>
+
+      <div class="hero__trust">
+        <div class="hero__trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          £1M Fully Insured
+        </div>
+        <div class="hero__trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          DBS Checked Staff
+        </div>
+        <div class="hero__trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          60-Second Response
+        </div>
+        <div class="hero__trust-item">
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          4.9 Star Rated
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── STATS BAR ──────────────────────────────────────────────────────────────── -->
+<div class="stats-bar" aria-label="Key statistics">
+  <div class="container">
+    <div class="stats-bar__inner">
+      <div class="stats-bar__item">
+        <div class="stats-bar__num">500+</div>
+        <div class="stats-bar__label">Homes Cleaned</div>
+      </div>
+      <div class="stats-bar__item">
+        <div class="stats-bar__num">4.9★</div>
+        <div class="stats-bar__label">Average Rating</div>
+      </div>
+      <div class="stats-bar__item">
+        <div class="stats-bar__num">100%</div>
+        <div class="stats-bar__label">Deposit Returns</div>
+      </div>
+      <div class="stats-bar__item">
+        <div class="stats-bar__num">&lt;60s</div>
+        <div class="stats-bar__label">Response Time</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SERVICES ────────────────────────────────────────────────────────────────── -->
+<section class="section section--alt" id="services">
+  <div class="container">
+    <div class="section__header section__header--center">
+      <div class="section__label">What We Offer</div>
+      <h2 class="section__title">Our Cleaning Services</h2>
+      <p class="section__sub">Whether it's your home, your office or a property handover — we deliver a spotless result every time.</p>
+    </div>
+
+    <div class="services-grid">
+      <!-- Domestic -->
+      <div class="service-card">
+        <div class="service-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <h3>Domestic Cleaning</h3>
+        <p>Regular or one-off deep cleans for homes across Birmingham — thorough, reliable and tailored to you.</p>
+        <ul class="service-card__features">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Weekly & fortnightly schedules
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            One-off deep cleans available
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Eco-friendly products on request
+          </li>
+        </ul>
+      </div>
+
+      <!-- Office -->
+      <div class="service-card">
+        <div class="service-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+        </div>
+        <h3>Office Cleaning</h3>
+        <p>Keep your workspace spotless with scheduled commercial cleans. Flexible hours so your team is never disrupted.</p>
+        <ul class="service-card__features">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Early morning & evening slots
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Desks, kitchens & washrooms
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Bespoke commercial contracts
+          </li>
+        </ul>
+      </div>
+
+      <!-- End of Tenancy -->
+      <div class="service-card">
+        <div class="service-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
+        </div>
+        <h3>End of Tenancy</h3>
+        <p>Landlord-standard deep cleans designed to pass any inspection and secure your full deposit back.</p>
+        <ul class="service-card__features">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            100% deposit return track record
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Oven, fridge & appliance clean
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Certificate of completion issued
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ────────────────────────────────────────────────────────────── -->
+<section class="section" id="how-it-works">
+  <div class="container">
+    <div class="section__header section__header--center">
+      <div class="section__label">Simple Process</div>
+      <h2 class="section__title">How It Works</h2>
+      <p class="section__sub">Booking a clean takes less than a minute. We handle everything else.</p>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step__num">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="step__num-badge">1</span>
+        </div>
+        <h3>Get a Quote</h3>
+        <p>Chat with our AI assistant or call us. Tell us the type of clean, property size, location and preferred date — takes 60 seconds.</p>
+      </div>
+
+      <div class="step">
+        <div class="step__num">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+          <span class="step__num-badge">2</span>
+        </div>
+        <h3>We Confirm</h3>
+        <p>Our team calls you back within the hour to confirm pricing and schedule. No hidden fees, no surprises.</p>
+      </div>
+
+      <div class="step">
+        <div class="step__num">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span class="step__num-badge">3</span>
+        </div>
+        <h3>We Clean</h3>
+        <p>A vetted, insured cleaner arrives on time and leaves your property spotless. It's that simple.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TRUST SIGNALS ───────────────────────────────────────────────────────────── -->
+<section class="section section--alt" id="about">
+  <div class="container">
+    <div class="section__header section__header--center">
+      <div class="section__label">Why Choose Us</div>
+      <h2 class="section__title">You're in Safe Hands</h2>
+      <p class="section__sub">Every cleaner is vetted, trained and backed by our quality guarantee.</p>
+    </div>
+
+    <div class="trust-grid">
+      <div class="trust-card">
+        <div class="trust-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="trust-card__body">
+          <h4>Fully Insured</h4>
+          <p>£1M public liability cover on every clean. Your home and belongings are fully protected.</p>
+        </div>
+      </div>
+
+      <div class="trust-card">
+        <div class="trust-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="trust-card__body">
+          <h4>60-Second Response</h4>
+          <p>We reply to every enquiry within 60 seconds during business hours. No waiting, no chasing.</p>
+        </div>
+      </div>
+
+      <div class="trust-card">
+        <div class="trust-card__icon">
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="trust-card__body">
+          <h4>5-Star Rated</h4>
+          <p>Consistently rated 4.9 / 5 across 200+ verified reviews. Trusted by Birmingham homeowners.</p>
+        </div>
+      </div>
+
+      <div class="trust-card">
+        <div class="trust-card__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="trust-card__body">
+          <h4>DBS Checked Staff</h4>
+          <p>All cleaners are background checked, trained to our standards and personally vetted before joining.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ────────────────────────────────────────────────────────────── -->
+<section class="section" id="reviews">
+  <div class="container">
+    <div class="section__header section__header--center">
+      <div class="section__label">Real Reviews</div>
+      <h2 class="section__title">What Customers Say</h2>
+      <p class="section__sub">Don't take our word for it — here's what our customers across Birmingham think.</p>
+    </div>
+
+    <div class="testimonials-grid">
+      <article class="testimonial">
+        <div class="testimonial__stars">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <p class="testimonial__text">"Absolutely brilliant service! My house has never looked so clean. They arrived on time, were incredibly thorough and the team were so polite. I'll never use anyone else."</p>
+        <div class="testimonial__author">
+          <div class="testimonial__avatar">SM</div>
+          <div>
+            <div class="testimonial__name">Sarah M.</div>
+            <div class="testimonial__location">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              Moseley, Birmingham
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="testimonial">
+        <div class="testimonial__stars">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <p class="testimonial__text">"Used SparkClean for an end of tenancy clean — got my full deposit back, no questions asked. The result was honestly better than when we moved in. Highly recommend."</p>
+        <div class="testimonial__author">
+          <div class="testimonial__avatar">JP</div>
+          <div>
+            <div class="testimonial__name">James P.</div>
+            <div class="testimonial__location">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              Edgbaston, Birmingham
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="testimonial">
+        <div class="testimonial__stars">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <p class="testimonial__text">"Weekly cleans with SparkClean for the past 6 months and the quality has been consistently excellent. Reliable, professional and always on time. Wouldn't go anywhere else."</p>
+        <div class="testimonial__author">
+          <div class="testimonial__avatar">LK</div>
+          <div>
+            <div class="testimonial__name">Lisa K.</div>
+            <div class="testimonial__location">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              Harborne, Birmingham
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA BANNER ──────────────────────────────────────────────────────────────── -->
+<section class="cta-banner">
+  <div class="container">
+    <h2>Ready for a Spotless Home?</h2>
+    <p>Get your free, no-obligation quote in under 60 seconds.</p>
+    <div class="cta-banner__actions">
+      <button class="btn btn--primary btn--lg" onclick="openChat()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Chat With Us Now
+      </button>
+      <a href="tel:+441216001234" class="btn btn--ghost btn--lg">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        0121 600 1234
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ──────────────────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__inner">
+      <div>
+        <div class="footer__brand">
+          <div class="footer__brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+          </div>
+          SparkClean Birmingham
+        </div>
+        <p class="footer__tagline">Professional cleaning services across Birmingham. Fully insured, DBS checked, 5-star rated.</p>
+      </div>
+      <div class="footer__links">
+        <a href="tel:+441216001234" class="footer__link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          0121 600 1234
+        </a>
+        <a href="mailto:hello@sparkclean.biz" class="footer__link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          hello@sparkclean.biz
+        </a>
+        <span class="footer__link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          Birmingham, United Kingdom
+        </span>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      &copy; 2025 SparkClean Birmingham. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<!-- ── CHAT FAB ──────────────────────────────────────────────────────────────── -->
+<button class="chat-fab" onclick="openChat()" aria-label="Open chat — get a free quote">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</button>
+
+<!-- ── CHAT PANEL ────────────────────────────────────────────────────────────── -->
+<div class="chat-panel" id="chatPanel" role="dialog" aria-label="SparkClean chat" aria-modal="true">
+  <div class="chat-panel__header">
+    <div class="chat-panel__avatar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+    </div>
+    <div class="chat-panel__info">
+      <div class="chat-panel__name">SparkClean Birmingham</div>
+      <div class="chat-panel__status">Online — replies in seconds</div>
+    </div>
+    <button class="chat-panel__close" onclick="closeChat()" aria-label="Close chat">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div class="chat-panel__messages" id="chatMessages" aria-live="polite">
+    <div class="chat-typing" id="typingIndicator" aria-label="SparkClean is typing">SparkClean is typing…</div>
+  </div>
+
+  <div class="chat-panel__input">
+    <input
+      type="text"
+      class="chat-input-field"
+      id="chatInput"
+      placeholder="Type a message…"
+      aria-label="Chat message"
+      onkeydown="if(event.key==='Enter') sendMessage()"
+    />
+    <button class="chat-send-btn" onclick="sendMessage()" aria-label="Send message">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+const OPENAI_API_KEY = "";
+
+const CHAT_SYSTEM = "You are a friendly assistant for SparkClean Birmingham. When customers want a quote collect one at a time: type of cleaning, property size, location, preferred date. After all details confirm and say team will call within the hour. Short natural messages only. Never mention AI.";
+
+let chatHistory = [];
+let chatReady   = false;
+
+function openChat() {
+  document.getElementById("chatPanel").classList.add("open");
+  if (!chatReady) {
+    chatReady = true;
+    setTimeout(() => addBotMsg("Hi! Need a cleaning quote? I can help 👋"), 700);
+  }
+}
+
+function closeChat() {
+  document.getElementById("chatPanel").classList.remove("open");
+}
+
+function nowTime() {
+  return new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+}
+
+function addBotMsg(text) {
+  chatHistory.push({ role: "assistant", content: text });
+  renderMsg(text, "bot");
+}
+
+function renderMsg(text, side) {
+  const wrap = document.getElementById("chatMessages");
+  const tip  = document.getElementById("typingIndicator");
+  const div  = document.createElement("div");
+  div.className   = "chat-msg chat-msg--" + side;
+  div.innerHTML   = text.replace(/\n/g, "<br>") + `<div class="chat-msg__time">${nowTime()}</div>`;
+  wrap.insertBefore(div, tip);
+  wrap.scrollTop  = wrap.scrollHeight;
+}
+
+function setTyping(show) {
+  document.getElementById("typingIndicator").classList.toggle("visible", show);
+  document.getElementById("chatMessages").scrollTop = 99999;
+}
+
+async function sendMessage() {
+  const input = document.getElementById("chatInput");
+  const text  = input.value.trim();
+  if (!text) return;
+
+  input.value = "";
+  chatHistory.push({ role: "user", content: text });
+  renderMsg(text, "user");
+  setTyping(true);
+
+  try {
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + OPENAI_API_KEY },
+      body:    JSON.stringify({ model: "gpt-4o", messages: [{ role: "system", content: CHAT_SYSTEM }, ...chatHistory], max_tokens: 200 })
+    });
+
+    const data = await res.json();
+    if (data.choices && data.choices[0]) {
+      const reply = data.choices[0].message.content.trim();
+      setTyping(false);
+      addBotMsg(reply);
+    } else throw new Error("empty");
+  } catch (e) {
+    setTyping(false);
+    addBotMsg("Sorry, something went wrong. Call us on 0121 600 1234!");
+    console.error(e);
+  }
+}
+</script>
+</body>
+</html>

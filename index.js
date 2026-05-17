@@ -2,10 +2,15 @@ require("dotenv").config();
 const express = require("express");
 const twilio  = require("twilio");
 const OpenAI  = require("openai");
+const { createClient } = require("@supabase/supabase-js");
 const MessagingResponse = twilio.twiml.MessagingResponse;
 
 const app    = express();
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+const supabase = (process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY)
+  ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY)
+  : null;
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -113,7 +118,7 @@ app.put("/api/jobs/:id", async (req, res) => {
     const cleaner = state.cleaners.find(c => c.id === req.body.cleaner);
     if (cleaner?.phone) {
       await sendWhatsApp(cleaner.phone,
-        `📋 *New Job — Sparkle Clean*\n\nHi ${cleaner.name.split(" ")[0]}!\n\n👤 *Client:* ${job.client}\n📍 *Address:* ${job.address}\n🧹 *Type:* ${job.type}\n📅 *Date:* ${job.date} at ${job.time}\n\nReply *STARTED* when you arrive, *DONE* when finished. 💪`
+        `📋 *New Job — SparkClean Birmingham*\n\nHi ${cleaner.name.split(" ")[0]}!\n\n👤 *Client:* ${job.client}\n📍 *Address:* ${job.address}\n🧹 *Type:* ${job.type}\n📅 *Date:* ${job.date} at ${job.time}\n\nReply *STARTED* when you arrive, *DONE* when finished. 💪`
       );
     }
     addNotif(`${cleaner?.name ?? "Cleaner"} assigned to ${job.client}'s job`, "👤");
@@ -160,28 +165,31 @@ app.put("/api/cleaners/:id", (req, res) => {
 });
 
 // ── OPENAI CUSTOMER CONVERSATION ──────────────────────────────────────────────
-const SYSTEM_PROMPT = `You are a friendly WhatsApp booking assistant for Sparkle Clean, a professional cleaning company in the UK.
+const SYSTEM_PROMPT = `You are a friendly WhatsApp booking assistant for SparkClean Birmingham, a professional cleaning company.
 
-Your job is to book customers in for a clean. Collect these details one question at a time — never ask more than one question per message:
+Your job is to collect a quote request from the customer. Collect these details one question at a time — never ask more than one question per message:
 1. Customer's full name
-2. Type of clean (Standard Clean, Deep Clean, End of Tenancy, or Office Clean)
-3. Full address
-4. Preferred date
-5. Preferred time
+2. Type of cleaning (Domestic Clean, Office Clean, or End of Tenancy)
+3. Property size (e.g. 1-bed flat, 3-bed house, office)
+4. Location / area in Birmingham
+5. Preferred date
 6. Best phone number to reach them on
 
 Rules:
 - Keep messages short and natural — this is WhatsApp not email
 - Use a warm, friendly tone. A couple of emojis is fine
 - Never make up prices — say the team will be in touch to confirm
-- Once you have ALL 6 details, send a clear confirmation summary to the customer
-- After the confirmation message, on a new line by itself, output exactly: BOOKING_COMPLETE:{"name":"...","type":"...","address":"...","date":"...","time":"...","phone":"..."}
+- Once you have ALL 6 details, send a clear confirmation summary to the customer and say the team will call within the hour
+- After the confirmation message, on a new line by itself, output exactly: BOOKING_COMPLETE:{"name":"...","service_type":"...","property_size":"...","location":"...","preferred_date":"...","phone":"..."}
 - Only output BOOKING_COMPLETE once you have confirmed all 6 details`;
 
+// conversations[phone] = { history: [], startedAt: timestamp }
 const conversations = {};
 
-function getHistory(phone) {
-  if (!conversations[phone]) conversations[phone] = [];
+function getConv(phone) {
+  if (!conversations[phone]) {
+    conversations[phone] = { history: [], startedAt: Date.now() };
+  }
   return conversations[phone];
 }
 
@@ -245,11 +253,11 @@ app.post("/webhook", async (req, res) => {
 
     } else {
       // ── GPT-4o customer conversation ──
-      const history = getHistory(from);
-      history.push({ role: "user", content: body });
+      const conv = getConv(from);
+      conv.history.push({ role: "user", content: body });
 
       // Keep last 20 messages to avoid token bloat
-      const trimmed = history.slice(-20);
+      const trimmed = conv.history.slice(-20);
 
       let rawReply;
       try {
@@ -269,34 +277,54 @@ app.post("/webhook", async (req, res) => {
       if (markerMatch) {
         try {
           const data = JSON.parse(markerMatch[1]);
-          const job  = {
+          const responseTimeSecs = Math.round((Date.now() - conv.startedAt) / 1000);
+
+          // Save lead to Supabase
+          if (supabase) {
+            const { error } = await supabase.from("leads").insert({
+              phone:                 from,
+              name:                  data.name           || null,
+              service_type:          data.service_type   || null,
+              property_size:         data.property_size  || null,
+              location:              data.location        || null,
+              preferred_date:        data.preferred_date  || null,
+              response_time_seconds: responseTimeSecs,
+              status:                "waiting_call",
+            });
+            if (error) console.error("Supabase insert error:", error.message);
+            else console.log(`Lead saved — ${data.name} (${from}), response time: ${responseTimeSecs}s`);
+          }
+
+          // Also create in-memory job so existing dashboard still works
+          const job = {
             id:      jobIdCounter++,
-            client:  data.name  || "Unknown",
-            phone:   data.phone || from,
-            address: data.address || "",
-            type:    data.type  || "Standard Clean",
-            date:    data.date  || "",
-            time:    data.time  || "",
+            client:  data.name          || "Unknown",
+            phone:   data.phone         || from,
+            address: data.location      || "",
+            type:    data.service_type  || "Domestic Clean",
+            date:    data.preferred_date || "",
+            time:    "",
             cleaner: null,
             status:  "incoming",
             source:  "whatsapp",
-            notes:   "Booked via WhatsApp",
+            notes:   `Property: ${data.property_size || "N/A"} — Booked via WhatsApp`,
           };
           state.jobs.push(job);
           pushEvent("JOB_CREATED", { job });
-          addNotif(`New booking via WhatsApp — ${job.client}`, "📱");
-          // Reset conversation so they can book again
-          conversations[from] = [];
+          addNotif(`New lead via WhatsApp — ${job.client}`, "📱");
+
+          // Reset conversation so customer can start a new quote
+          conversations[from] = { history: [], startedAt: Date.now() };
         } catch (e) {
           console.error("Booking parse error:", e.message);
         }
-        // Strip the marker line before sending to customer
+        // Strip the marker line before replying to customer
         reply = rawReply.replace(/\nBOOKING_COMPLETE:\{.*\}/, "").trim();
       } else {
         reply = rawReply;
       }
 
-      history.push({ role: "assistant", content: rawReply });
+      conv.history.push({ role: "assistant", content: rawReply });
     }
 
     twiml.message(reply);
@@ -311,13 +339,13 @@ app.post("/webhook", async (req, res) => {
 
 // ── HEALTH ────────────────────────────────────────────────────────────────────
 app.get("/", (_req, res) =>
-  res.send("✨ Sparkle Clean Bot is running.")
+  res.send("✨ SparkClean Birmingham Bot is running.")
 );
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`\n✨ Sparkle Clean Bot  →  http://localhost:${PORT}`);
-  console.log(`   API state          →  http://localhost:${PORT}/api/state`);
-  console.log(`   SSE stream         →  http://localhost:${PORT}/api/events`);
-  console.log(`   Webhook            →  POST http://localhost:${PORT}/webhook\n`);
+  console.log(`\n✨ SparkClean Birmingham Bot  →  http://localhost:${PORT}`);
+  console.log(`   API state              →  http://localhost:${PORT}/api/state`);
+  console.log(`   SSE stream             →  http://localhost:${PORT}/api/events`);
+  console.log(`   Webhook                →  POST http://localhost:${PORT}/webhook\n`);
 });
