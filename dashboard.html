@@ -662,6 +662,16 @@ const sb = (SUPABASE_URL && SUPABASE_ANON_KEY)
   ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   : null;
 
+/* ── Demo data (shown when Supabase not connected) ──────────────────────── */
+const DEMO_LEADS = [
+  { id:'d1', name:'Sarah Mitchell',  phone:'+447911123456', service_type:'Domestic Clean',  property_size:'3-bed house',  location:'Moseley',    preferred_date:'2026-05-20', response_time_seconds:47,  status:'booked',       created_at: new Date().toISOString() },
+  { id:'d2', name:'James Patel',     phone:'+447700900123', service_type:'End of Tenancy',  property_size:'2-bed flat',   location:'Edgbaston',  preferred_date:'2026-05-22', response_time_seconds:123, status:'waiting_call', created_at: new Date().toISOString() },
+  { id:'d3', name:'Lisa Thompson',   phone:'+447800123456', service_type:'Office Clean',    property_size:'Small office', location:'Digbeth',    preferred_date:'2026-05-19', response_time_seconds:89,  status:'called',       created_at: new Date().toISOString() },
+  { id:'d4', name:'Mohammed Ali',    phone:'+447911654321', service_type:'Domestic Clean',  property_size:'4-bed house',  location:'Harborne',   preferred_date:'2026-05-23', response_time_seconds:34,  status:'no_answer',    created_at: new Date().toISOString() },
+  { id:'d5', name:'Emma Clarke',     phone:'+447700456789', service_type:'End of Tenancy',  property_size:'1-bed flat',   location:'Selly Oak',  preferred_date:'2026-05-21', response_time_seconds:201, status:'booked',       created_at: new Date().toISOString() },
+  { id:'d6', name:'Daniel Wright',   phone:'+447933112233', service_type:'Domestic Clean',  property_size:'2-bed flat',   location:'Kings Heath',preferred_date:'2026-05-24', response_time_seconds:56,  status:'waiting_call', created_at: new Date().toISOString() },
+];
+
 /* ── State ──────────────────────────────────────────────────────────────── */
 let allLeads    = [];
 let filterStatus = "";
@@ -670,7 +680,7 @@ let refreshTimer = 30;
 
 /* ── Supabase ───────────────────────────────────────────────────────────── */
 async function loadLeads() {
-  if (!sb) { renderNoConfig(); return; }
+  if (!sb) { allLeads = DEMO_LEADS; renderStats(); renderTable(); return; }
 
   const { data, error } = await sb
     .from("leads")
@@ -799,7 +809,26 @@ function resetFilters() {
   filterStatus = ""; filterDate = "";
   document.getElementById("filterStatus").value = "";
   document.getElementById("filterDate").value   = "";
+  setActiveNav("nav-all");
   renderTable();
+}
+
+function setNavFilter(status, navId) {
+  filterStatus = status;
+  filterDate   = "";
+  document.getElementById("filterStatus").value = status;
+  document.getElementById("filterDate").value   = "";
+  setActiveNav(navId);
+  renderTable();
+}
+
+function setActiveNav(id) {
+  document.querySelectorAll(".nav-item[data-nav]").forEach(el => {
+    el.classList.remove("active");
+    el.removeAttribute("aria-current");
+  });
+  const el = document.getElementById(id);
+  if (el) { el.classList.add("active"); el.setAttribute("aria-current","page"); }
 }
 
 /* ── Helpers ────────────────────────────────────────────────────────────── */
@@ -870,29 +899,29 @@ setInterval(() => {
     <nav class="sidebar__nav" aria-label="Main navigation">
       <div class="sidebar__section-label">Main</div>
 
-      <a href="#" class="nav-item active" aria-current="page">
+      <a id="nav-all" data-nav href="#" class="nav-item active" aria-current="page" onclick="setNavFilter('','nav-all');return false;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-        Dashboard
+        All Leads
       </a>
 
-      <a href="#" class="nav-item" onclick="applyStatus('waiting_call');return false;">
+      <a id="nav-waiting" data-nav href="#" class="nav-item" onclick="setNavFilter('waiting_call','nav-waiting');return false;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         Needs Calling
       </a>
 
-      <a href="#" class="nav-item" onclick="applyStatus('booked');return false;">
+      <a id="nav-booked" data-nav href="#" class="nav-item" onclick="setNavFilter('booked','nav-booked');return false;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         Booked
       </a>
 
-      <a href="#" class="nav-item" onclick="applyStatus('no_answer');return false;">
+      <a id="nav-noanswer" data-nav href="#" class="nav-item" onclick="setNavFilter('no_answer','nav-noanswer');return false;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
         No Answer
       </a>
 
       <div class="sidebar__section-label" style="margin-top:.5rem;">Links</div>
 
-      <a href="index.html" class="nav-item">
+      <a href="https://sparkclean-birmingham.vercel.app" target="_blank" rel="noopener" class="nav-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         View Website
       </a>
