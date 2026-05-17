@@ -337,6 +337,81 @@ app.post("/webhook", async (req, res) => {
   res.send(twiml.toString());
 });
 
+// ── WEB CHAT ENDPOINT ─────────────────────────────────────────────────────────
+app.post("/chat", async (req, res) => {
+  const { sessionId, message } = req.body;
+  if (!sessionId || !message) return res.status(400).json({ error: "Missing sessionId or message" });
+
+  const phone = "web-" + sessionId;
+  const conv  = getConv(phone);
+  conv.history.push({ role: "user", content: message });
+
+  const trimmed = conv.history.slice(-20);
+
+  let rawReply;
+  try {
+    const completion = await openai.chat.completions.create({
+      model:      "gpt-4o",
+      messages:   [{ role: "system", content: SYSTEM_PROMPT }, ...trimmed],
+      max_tokens: 350,
+    });
+    rawReply = completion.choices[0].message.content.trim();
+  } catch (e) {
+    console.error("OpenAI /chat error:", e.message);
+    return res.json({ reply: "Sorry, something went wrong. Call us on 0121 600 1234!" });
+  }
+
+  const markerMatch = rawReply.match(/BOOKING_COMPLETE:(\{.*\})/);
+  let reply = rawReply;
+
+  if (markerMatch) {
+    try {
+      const data = JSON.parse(markerMatch[1]);
+      const responseTimeSecs = Math.round((Date.now() - conv.startedAt) / 1000);
+
+      if (supabase) {
+        const { error } = await supabase.from("leads").insert({
+          phone:                 data.phone          || phone,
+          name:                  data.name           || null,
+          service_type:          data.service_type   || null,
+          property_size:         data.property_size  || null,
+          location:              data.location        || null,
+          preferred_date:        data.preferred_date  || null,
+          response_time_seconds: responseTimeSecs,
+          status:                "waiting_call",
+        });
+        if (error) console.error("Supabase insert error:", error.message);
+        else console.log(`Web lead saved — ${data.name}, response time: ${responseTimeSecs}s`);
+      }
+
+      const job = {
+        id:      jobIdCounter++,
+        client:  data.name          || "Unknown",
+        phone:   data.phone         || phone,
+        address: data.location      || "",
+        type:    data.service_type  || "Domestic Clean",
+        date:    data.preferred_date || "",
+        time:    "",
+        cleaner: null,
+        status:  "incoming",
+        source:  "website",
+        notes:   `Property: ${data.property_size || "N/A"} — Booked via Website Chat`,
+      };
+      state.jobs.push(job);
+      pushEvent("JOB_CREATED", { job });
+      addNotif(`New lead via Website — ${job.client}`, "🌐");
+
+      conversations[phone] = { history: [], startedAt: Date.now() };
+    } catch (e) {
+      console.error("Web booking parse error:", e.message);
+    }
+    reply = rawReply.replace(/\nBOOKING_COMPLETE:\{.*\}/, "").trim();
+  }
+
+  conv.history.push({ role: "assistant", content: rawReply });
+  res.json({ reply });
+});
+
 // ── HEALTH ────────────────────────────────────────────────────────────────────
 app.get("/", (_req, res) =>
   res.send("✨ SparkClean Birmingham Bot is running.")
